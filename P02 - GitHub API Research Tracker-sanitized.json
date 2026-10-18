@@ -1,0 +1,585 @@
+{
+  "name": "P02 - GitHub API Research Tracker",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "c321eb20-79aa-49b5-a617-0c18ad8cb676",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/search/repositories",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "n8n automation"
+            },
+            {
+              "name": "sort",
+              "value": "updated"
+            },
+            {
+              "name": "order",
+              "value": "desc"
+            },
+            {
+              "name": "per_page",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        176,
+        0
+      ],
+      "id": "fff8a46c-d4fd-425d-a89b-33a33a922b99",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -144
+      ],
+      "id": "01c2eacb-f9f2-45b8-92ef-ca9f609c964c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe165d6d-f618-48f0-9784-2395fb5c771c",
+              "name": "repository_id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "234952c8-a57b-4f42-9557-bfc50200e49e",
+              "name": "repository_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "cb71a93f-0f88-4eea-9a2b-d3a3a5d6205a",
+              "name": "owner",
+              "value": "={{ $json.owner.login }}",
+              "type": "string"
+            },
+            {
+              "id": "18d11a3b-801a-4afb-9cfd-5aa3347f95b7",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "f3a23b6b-e2fb-47c4-861b-86ac2cb7b4ca",
+              "name": "repository_url",
+              "value": "={{ $json.html_url }}",
+              "type": "string"
+            },
+            {
+              "id": "23883027-82b7-44aa-ade3-19ffd8761c1f",
+              "name": "stars",
+              "value": "={{ $json.stargazers_count }}",
+              "type": "number"
+            },
+            {
+              "id": "541b0b77-d87e-4048-9285-afb89a078435",
+              "name": "last_updated",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            },
+            {
+              "id": "de09369f-9924-415b-adf3-ace17b5f96a6",
+              "name": "date_collected",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        848,
+        -144
+      ],
+      "id": "3a4dba73-d14d-45dc-bb20-d70cc86167a8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Repositories",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "repository_id"
+          ],
+          "schema": [
+            {
+              "id": "repository_id",
+              "displayName": "repository_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "repository_name",
+              "displayName": "repository_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "repository_url",
+              "displayName": "repository_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stars",
+              "displayName": "stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_updated",
+              "displayName": "last_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date_collected",
+              "displayName": "date_collected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1072,
+        -144
+      ],
+      "id": "14707ca0-9c86-41ff-b107-6223f8123a07",
+      "name": "Append or update row in sheet",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "997e61fb-2f21-4778-aa94-0a0bd34190fb",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "7f89b042-3a6c-45c0-b544-ea7a005cb8a9",
+              "name": "workflow_name",
+              "value": "={{ $workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "bfd63a15-ded1-415e-9570-273f3bc92cda",
+              "name": "node_name",
+              "value": "={{ 'HTTP Request' }}",
+              "type": "string"
+            },
+            {
+              "id": "1c9b0b52-409e-4738-8527-58a314a82b09",
+              "name": "error_message",
+              "value": "={{ $json.error?.message ?? $json.message ?? 'Unknown API error' }}",
+              "type": "string"
+            },
+            {
+              "id": "a4e3586e-5627-41ac-88e4-5620c44597dd",
+              "name": "status_code",
+              "value": "={{ String($json.error?.httpCode ?? $json.error?.statusCode ?? $json.statusCode ?? 'N/A') }}",
+              "type": "string"
+            },
+            {
+              "id": "bc22b0e0-dba8-4fb2-b27a-ce6985805fa2",
+              "name": "status",
+              "value": "={{ 'FAILED' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        608,
+        16
+      ],
+      "id": "3c867c23-c03b-47e4-8e0b-f925a195e819",
+      "name": "Format API Error"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Error_Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "node_name",
+              "displayName": "node_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_code",
+              "displayName": "status_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        16
+      ],
+      "id": "475123be-5f2b-4bd6-b981-5c7ae740626b",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0a7896b2-24b7-4d76-b9e6-d7f232834a45",
+              "leftValue": "={{ ($json.items ?? []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        368,
+        -128
+      ],
+      "id": "e4a1853e-5eaa-440b-9485-c4a91d394fbb",
+      "name": "Has Repositories?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c6fe656-4ab1-4f41-a6b0-09e7cf522632",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "5c6a35c0-af1f-4049-acc6-2659627c39d5",
+              "name": "workflow_name",
+              "value": "={{ $workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "da77cd09-15ee-4dc8-a2f7-270a17189eb7",
+              "name": "node_name",
+              "value": "={{ 'Google Sheets - Repository Sync' }}",
+              "type": "string"
+            },
+            {
+              "id": "95c2a920-fc03-4a6b-b09f-4efe9965e647",
+              "name": "error_message",
+              "value": "={{ typeof $json.error === 'string' ? $json.error : ($json.error?.message ?? $json.message ?? 'Unknown Google Sheets error') }}",
+              "type": "string"
+            },
+            {
+              "id": "8f980b69-fc0d-4fa7-93b4-d9944b8c099a",
+              "name": "status_code",
+              "value": "={{ String($json.error?.httpCode ?? $json.error?.statusCode ?? $json.statusCode ?? 'N/A') }}",
+              "type": "string"
+            },
+            {
+              "id": "3cc663a1-4747-42b3-a4a7-3da410150f19",
+              "name": "status",
+              "value": "={{ 'FAILED' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1328,
+        -128
+      ],
+      "id": "0af7ffda-93c2-4e21-aa49-6e6a5eb15882",
+      "name": "Format Sheets Error"
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ 'Google Sheets sync failed: ' + $json.error_message + ' | Status: ' + $json.status_code }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -128
+      ],
+      "id": "fc3992ef-b31c-4e11-91b2-8e9f6e1af371",
+      "name": "Stop and Error"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Has Repositories?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format API Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format API Error": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Repositories?": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Format Sheets Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Sheets Error": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
